@@ -226,12 +226,24 @@ public class Sound {
      * reverse the sound
      */
     public void reverse() {
-
+        ArrayList<Integer> temp = new ArrayList<Integer>();
+        for (int i = myData.size()-1; i>=0; i--){
+            temp.add(myData.get(i));
+        }
+        myData = temp;
+        refresh();
 
     }
 
     // this throws out half the data
     public void doublePitch() {
+        ArrayList<Integer> temp = new ArrayList<Integer>();
+        for(int i=0; i< myData.size()/2; i++){
+            temp.add(myData.get(i*2));
+
+        }
+        myData = temp;
+        refresh();
 
     }
 
@@ -239,7 +251,10 @@ public class Sound {
   
     //complete this method
     public void amplify (double amt) {
-
+        for(int i = 0; i<myData.size(); i++){
+            myData.set(i,(int)(myData.get(i)*amt));
+        }        
+        refresh();
     }
 
     /*
@@ -247,6 +262,13 @@ public class Sound {
      * Used by normalize() to determine the scaling factor.
      */
     private int findAbsoluteMax() {
+        int max = myData.get(0);
+        for (int i=0; i<myData.size(); i++){
+            if (max<myData.get(i)){
+                max = myData.get(i);
+            }
+        }
+        return max;
   
     }
 
@@ -256,6 +278,9 @@ public class Sound {
      * This makes quiet sounds louder while preventing distortion.
      */
     public void normalize() {
+        int max = this.findAbsoluteMax();
+        double sf = 32000/(max*1.0);
+        this.amplify(sf);
 
 
     }
@@ -268,7 +293,10 @@ public class Sound {
     // - replace the current value with the new value
     // - refresh!
     public void fadeIn(double seconds) {
+        int numToChange = (int)Math.round(this.getSamplingRate()*seconds);
+        if (numToChange > sound.size())
 
+        }
    
     }
 
