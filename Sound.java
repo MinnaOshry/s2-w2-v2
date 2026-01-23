@@ -294,15 +294,29 @@ public class Sound {
     // - refresh!
     public void fadeIn(double seconds) {
         int numToChange = (int)Math.round(this.getSamplingRate()*seconds);
-        if (numToChange > sound.size())
-
+        double factor = 1.0 / numToChange;
+        double multiply = factor;
+        for (int i=0; i< numToChange; i++){
+            myData.set(i, (int)(multiply* myData.get(i)));
+            multiply = factor*i;
         }
+
+        
+
+        
    
     }
 
 
     // Fade out over a duration in seconds
     public void fadeOut(double seconds) {
+        int numToChange = (int)Math.round(this.getSamplingRate()*seconds);
+        double factor = 1.0 / numToChange;
+        double multiply = factor;
+        for (int i=numToChange; i>0; i--){
+            myData.set(i, (int)(multiply* myData.get(i)));
+            multiply = factor*i;
+        }
 
     }
 
@@ -313,10 +327,22 @@ public class Sound {
      */
     public void setSquare(int hertz) {
         int maxAmplitude = 25000;
+        int samplesPerCycle = (int)Math.round(this.getSamplingRate()/hertz);
         // based on hertz: cycles per second
         // cycle - is one complete wave 
         // sampleRate() -- getSamplingRate() - samples per second
         // You need to calculate the samplesPerCycle 
+        int spot = 0;
+        for (int i =0; i < hertz; i++){
+            for ( int m =0; m<samplesPerCycle/2; m++){
+                myData.set(spot, maxAmplitude);
+                spot ++;
+            }
+            for ( int p =samplesPerCycle/2; p<samplesPerCycle; p++){
+                myData.set(spot, -maxAmplitude);
+                spot++;
+            }
+        }
 
     }
 
