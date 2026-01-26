@@ -333,14 +333,12 @@ public class Sound {
         // sampleRate() -- getSamplingRate() - samples per second
         // You need to calculate the samplesPerCycle 
         int spot = 0;
-        for (int i =0; i < hertz; i++){
-            for ( int m =0; m<samplesPerCycle/2; m++){
-                myData.set(spot, maxAmplitude);
-                spot ++;
+        while (spot < myData.size()) {
+            for (int i = 0; i < samplesPerCycle / 2 && spot < myData.size(); i++) {
+                myData.set(spot++, maxAmplitude);
             }
-            for ( int p =samplesPerCycle/2; p<samplesPerCycle; p++){
-                myData.set(spot, -maxAmplitude);
-                spot++;
+            for (int i = 0; i < samplesPerCycle / 2 && spot < myData.size(); i++) {
+                myData.set(spot++, -maxAmplitude);
             }
         }
 
@@ -351,12 +349,29 @@ public class Sound {
     // Simple echo: single delayed tap mixed with the original
     // What is echo mathically: current value + (decay * past)
     public void echo(double delaySeconds, double decay) {
+        int delaySamples = (int)(delaySeconds * getSamplingRate());
+
+    // Copy original so echo always uses the original past values
+    ArrayList<Integer> original = new ArrayList<Integer>(myData);
+
+    for (int i = delaySamples; i < myData.size(); i++) {
+        int current = original.get(i);
+        int past = original.get(i - delaySamples);
+
+        int echoed = current + (int)(decay * past);
+        myData.set(i, clampSample(echoed));
+    }
+
+    refresh();
 
     }
 
     private int clampSample(int value) {
+    int max = getMaxSampleValue();
+    if (value > max) return max;
+    if (value < -max) return -max;
+    return value;
 
-        return -1;
     }
 
 
